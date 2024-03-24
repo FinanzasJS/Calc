@@ -1,0 +1,113 @@
+document.addEventListener('DOMContentLoaded', function() {
+    function calculateCompoundInterest() {
+        const initialMoney = parseFloat(document.getElementById("initial-money").value) || 0;
+        const periodicInvestment = parseFloat(document.getElementById("periodic-investment").value) || 0;
+        const investmentYears = parseInt(document.getElementById("investment-years").value) || 0;
+        const investmentRate = parseFloat(document.getElementById("investment-rate").value) / 100 || 0;
+        const investmentFrequency = parseInt(document.getElementById("investment-frequency").value) || 0;
+
+        let futureValue = initialMoney; // Asegúrate de que esta variable esté definida en este alcance
+        let totalInvested = initialMoney; // Inicializa la inversión total con el valor inicial
+        const labels = [];
+        const futureValueData = [];
+        const investedValueData = [];
+
+        // Calcular el valor futuro e invertido para cada año
+        for (let year = 1; year <= investmentYears; year++) {
+            labels.push(`Año ${year}`);
+            
+            for (let period = 0; period < investmentFrequency; period++) {
+                futureValue += (futureValue * investmentRate / investmentFrequency) + periodicInvestment;
+                totalInvested += periodicInvestment;
+            }
+
+            futureValueData.push(futureValue.toFixed(2));
+            investedValueData.push(totalInvested.toFixed(2));
+        }
+
+        // Actualiza el elemento de resultado con el valor futuro estimado
+        document.getElementById('result').innerHTML = `Valor futuro estimado: €${futureValue.toFixed(2)}`;
+
+        // Llama a la función para actualizar la gráfica con los datos calculados
+        updateChart(labels, futureValueData, investedValueData);
+    }
+
+ function updateChart(labels, futureValueData, investedValueData) {
+    const ctx = document.getElementById('chart').getContext('2d');
+    
+    if (window.myChart) {
+        window.myChart.destroy(); // Destruye la instancia anterior si existe
+    }
+    
+    window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+            {
+                label: 'Valor Invertido',
+                data: investedValueData,
+                borderColor: '#000000', // Color de la línea negra
+                backgroundColor: '#000000', // Hace el relleno sólido y del mismo color negro
+                fill: false,
+                pointRadius: 5, // Aumenta el tamaño de los puntos
+                pointBackgroundColor: '#FFFFFF', // Color de fondo de los puntos
+                pointBorderColor: '#000000', // Color del borde de los puntos
+                pointBorderWidth: 2, // Ancho del borde de los puntos
+                order: 1 // Asegura que este dataset se dibuje encima
+            },
+            {
+                label: 'Valor Futuro',
+                data: futureValueData,
+                borderColor: '#d4af37', // Color de la línea dorada
+                backgroundColor: '#d4af37', // Hace el relleno sólido y del mismo color dorado
+                fill: false,
+                pointRadius: 5, // Aumenta el tamaño de los puntos
+                pointBackgroundColor: '#FFFFFF', // Color de fondo de los puntos
+                pointBorderColor: '#d4af37', // Color del borde de los puntos
+                pointBorderWidth: 2, // Ancho del borde de los puntos
+                order: 2 // Este dataset se dibuja debajo del anterior
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Valor (€)'
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'linear',
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        // Esto te permite añadir color de fondo a las etiquetas de la leyenda, pero es opcional
+                        usePointStyle: true,
+                    }
+                },
+                tooltip: {
+                    // Configuraciones para mostrar tooltips con valores; ajusta según necesites
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                intersect: false,
+                axis: 'x'
+            }
+        }
+    });
+}
+
+
+
+    // Añade un listener al botón de calcular para ejecutar la función de cálculo
+    document.getElementById('calculate-button').addEventListener('click', calculateCompoundInterest);
+});
