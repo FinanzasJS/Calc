@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Interés Compuesto</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+/* Estilos Generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background-color: #f0f0f0; /* Fondo ligeramente gris para un contraste suave */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar los elementos verticalmente */
+}
+
+.container {
+    width: 100%;
+    max-width: 600px; /* Ancho máximo para la contención de contenido */
+    margin: 20px auto; /* Margen automático para centrar + espacio superior e inferior */
+    padding: 20px; /* Espaciado interno */
+    background-color: #fff; /* Fondo blanco para el contenedor principal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+    border-radius: 8px; /* Bordes redondeados para suavizar los bordes */
+    text-align: center; /* Centrar el texto y elementos como botones */
+}
+
+/* Títulos */
+h1 {
+    color: #d4af37; /* Color dorado para títulos principales */
+    margin-bottom: 20px; /* Espaciado después del título */
+}
+
+/* Grupos de Entrada */
+.input-group {
+    width: 100%;
+    margin-bottom: 15px; /* Espaciado entre grupos de entrada */
+}
+
+.input-group label {
+    display: block; /* Asegura que la etiqueta ocupe su propia línea */
+    color: #000; /* Texto negro para contraste */
+    margin-bottom: 5px; /* Espaciado debajo de la etiqueta */
+}
+
+.input-group input,
+.input-group select {
+    width: 100%; /* Ancho completo para aprovechar el espacio */
+    padding: 10px; /* Espaciado interno para facilidad de entrada */
+    margin-bottom: 10px; /* Espaciado después de cada entrada */
+    border: 1px solid #d4af37; /* Borde dorado */
+    border-radius: 4px; /* Bordes redondeados para estética */
+    box-sizing: border-box; /* Asegura que el padding no afecte las dimensiones */
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #c9a030; /* Color dorado claro en foco */
+    box-shadow: 0 0 8px rgba(216, 174, 72, 0.6); /* Sombra sutil al enfocar */
+}
+
+/* Botón de Calcular */
+.button-container {
+    display: flex;
+    justify-content: center; /* Centra el botón horizontalmente */
+    margin: 20px 0; /* Espaciado antes y después del botón */
+}
+
+button {
+    background-color: #d4af37; /* Color de fondo dorado */
+    color: #fff; /* Texto blanco */
+    border: none; /* Sin borde para un look limpio */
+    padding: 10px 20px; /* Espaciado interno */
+    cursor: pointer; /* Indicador visual de que es clickeable */
+    font-size: 1rem; /* Tamaño de texto adecuado */
+    border-radius: 5px; /* Suaviza los bordes del botón */
+    transition: background-color 0.3s; /* Transición suave para el color de fondo */
+}
+
+button:hover {
+    background-color: #b3982c; /* Color dorado oscuro al pasar el ratón */
+}
+
+button:active {
+    background-color: #000; /* Cambia a negro al hacer clic */
+}
+
+/* Resultados y Gráfica */
+#result {
+    padding: 15px;
+    background-color: #000; /* Fondo negro para contraste */
+    color: #d4af37; /* Texto dorado */
+    margin-top: 20px; /* Espaciado superior */
+    border-radius: 4px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para efecto de profundidad */
+    transition: transform 0.3s ease; /* Transición para efecto interactivo */
+}
+
+#result:hover {
+    transform: translateY(-2px); /* Eleva ligeramente el resultado al pasar el ratón */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada en hover */
+}
+
+#chart {
+    width: 100%; /* Ajuste de ancho para responsividad */
+    margin-top: 20px; /* Espaciado superior */
+    background-color: #f4f4f4; /* Fondo claro para el canvas de la gráfica */
+    border: 2px solid #d4af37; /* Borde dorado */
+    border-radius: 4px; /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Ajustes para Responsividad */
+@media (max-width: 768px) {
+    body, .container, #result {
+        padding: 10px; /* Reducción del espaciado interno en pantallas pequeñas */
+    }
+
+    .input-group input,
+    .input-group select,
+    button {
+        font-size: 14px; /* Ajuste de tamaño de fuente para mejorar legibilidad */
+    }
+}
+
+</style>
+<body>
+    <div class="container">
+        <h1>CREA TU BOLA DE NIEVE</h1>
+        <div class="input-group">
+            <label for="initial-money">Dinero inicial:</label>
+            <input type="number" id="initial-money" placeholder="Dinero inicial (€)">
+        </div>
+        <div class="input-group">
+            <label for="periodic-investment">Inversión periódica:</label>
+            <input type="number" id="periodic-investment" placeholder="Inversión periódica (€)">
+        </div>
+        <div class="input-group">
+            <label for="investment-years">Años de inversión:</label>
+            <input type="number" id="investment-years" placeholder="Años de inversión">
+        </div>
+        <div class="input-group">
+            <label for="investment-rate">Tasa de interés (%):</label>
+            <input type="number" id="investment-rate" placeholder="Tasa de interés (%)">
+        </div>
+        <div class="input-group">
+            <label for="investment-frequency">Frecuencia de inversión:</label>
+            <select id="investment-frequency">
+                <option value="12">Mensual</option>
+                <option value="6">Bimestral</option>
+                <option value="4">Trimestral</option>
+                <option value="2">Semestral</option>
+                <option value="1">Anual</option>
+            </select>
+        </div>
+        <div class="button-container">
+            <button id="calculate-button">Calcular</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    <canvas id="chart" width="400" height="200"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Aquí integrarías el JavaScript que he proporcionado anteriormente
+        // Por ejemplo:
+        function calculateCompoundInterest() {
+            // Código para calcular el interés compuesto
+        }
+
+        function updateChart(labels, futureValueData, investedValueData) {
+            // Código para actualizar la gráfica
+        }
+
+        // Asegúrate de que este ID coincida con el del botón en tu HTML
+        document.getElementById('calculate-button').addEventListener('click', calculateCompoundInterest);
+    </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function calculateCompoundInterest() {
+        const initialMoney = parseFloat(document.getElementById("initial-money").value) || 0;
+        const periodicInvestment = parseFloat(document.getElementById("periodic-investment").value) || 0;
+        const investmentYears = parseInt(document.getElementById("investment-years").value) || 0;
+        const investmentRate = parseFloat(document.getElementById("investment-rate").value) / 100 || 0;
+        const investmentFrequency = parseInt(document.getElementById("investment-frequency").value) || 0;
+
+        let futureValue = initialMoney; // Asegúrate de que esta variable esté definida en este alcance
+        let totalInvested = initialMoney; // Inicializa la inversión total con el valor inicial
+        const labels = [];
+        const futureValueData = [];
+        const investedValueData = [];
+
+        // Calcular el valor futuro e invertido para cada año
+        for (let year = 1; year <= investmentYears; year++) {
+            labels.push(`Año ${year}`);
+            
+            for (let period = 0; period < investmentFrequency; period++) {
+                futureValue += (futureValue * investmentRate / investmentFrequency) + periodicInvestment;
+                totalInvested += periodicInvestment;
+            }
+
+            futureValueData.push(futureValue.toFixed(2));
+            investedValueData.push(totalInvested.toFixed(2));
+        }
+
+        // Actualiza el elemento de resultado con el valor futuro estimado
+        document.getElementById('result').innerHTML = `Valor futuro estimado: €${futureValue.toFixed(2)}`;
+
+        // Llama a la función para actualizar la gráfica con los datos calculados
+        updateChart(labels, futureValueData, investedValueData);
+    }
+
+ function updateChart(labels, futureValueData, investedValueData) {
+    const ctx = document.getElementById('chart').getContext('2d');
+    
+    if (window.myChart) {
+        window.myChart.destroy(); // Destruye la instancia anterior si existe
+    }
+    
+    window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+            {
+                label: 'Valor Invertido',
+                data: investedValueData,
+                borderColor: '#000000', // Color de la línea negra
+                backgroundColor: '#000000', // Hace el relleno sólido y del mismo color negro
+                fill: false,
+                pointRadius: 5, // Aumenta el tamaño de los puntos
+                pointBackgroundColor: '#FFFFFF', // Color de fondo de los puntos
+                pointBorderColor: '#000000', // Color del borde de los puntos
+                pointBorderWidth: 2, // Ancho del borde de los puntos
+                order: 1 // Asegura que este dataset se dibuje encima
+            },
+            {
+                label: 'Valor Futuro',
+                data: futureValueData,
+                borderColor: '#d4af37', // Color de la línea dorada
+                backgroundColor: '#d4af37', // Hace el relleno sólido y del mismo color dorado
+                fill: false,
+                pointRadius: 5, // Aumenta el tamaño de los puntos
+                pointBackgroundColor: '#FFFFFF', // Color de fondo de los puntos
+                pointBorderColor: '#d4af37', // Color del borde de los puntos
+                pointBorderWidth: 2, // Ancho del borde de los puntos
+                order: 2 // Este dataset se dibuja debajo del anterior
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Valor (€)'
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'linear',
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        // Esto te permite añadir color de fondo a las etiquetas de la leyenda, pero es opcional
+                        usePointStyle: true,
+                    }
+                },
+                tooltip: {
+                    // Configuraciones para mostrar tooltips con valores; ajusta según necesites
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                intersect: false,
+                axis: 'x'
+            }
+        }
+    });
+}
+
+
+
+    // Añade un listener al botón de calcular para ejecutar la función de cálculo
+    document.getElementById('calculate-button').addEventListener('click', calculateCompoundInterest);
+});
+
+</script>
+</body>
+</html>
